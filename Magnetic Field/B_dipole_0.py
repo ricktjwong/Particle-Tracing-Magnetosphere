@@ -12,7 +12,6 @@ from matplotlib import pyplot as plt
 
 rcParams.update({'figure.autolayout': True})
 
-
 def dipole(m, r, r0):
     """Calculate a field in point r created by a dipole moment m located in r0.
     Spatial components are the outermost axis of r and returned B.
@@ -40,8 +39,9 @@ Y = np.linspace(-1, 1)
 Z = np.linspace(-1, 1)
 
 # Magnetic dipole orientated in the z direction
-Bx, By, Bz = dipole(m=[0.0, 0.0, 0.1], r=np.meshgrid(X, Y, Z), r0=[0.0,0.0,0.0])
-print np.shape(Bz)
+#Bx, By, Bz = dipole(m=[0.0, 0.0, 0.1], r=np.meshgrid(X, Y, Z), r0=[0.0,0.0,0.0])
+#print np.shape(Bz)
+print dipole(m=[0.0, 1.0, 3.0], r=[0.0, 1.0, 2.0], r0=[0.0, 1.0, 0.0])
 
 #Bx, By = dipole(m=[0.0, 0.1], r=np.meshgrid(X, Y), r0=[0.0,0.0])
 #
@@ -52,10 +52,10 @@ print np.shape(Bz)
 
 # Works in 3 dimensions as well:
 
-X1 = np.linspace(-1, 1, 6)
-print X1
-Y1 = np.linspace(-1, 1, 6)
-Z1 = np.linspace(-1, 1, 6)
-Bx, By, Bz = dipole(m=[0.0, 0.0, 3.0], r=np.meshgrid(X1,Y1,Z1), r0=[0, 0, 0])
-print np.shape(Bx)
-print Bx
+#X1 = np.linspace(-1, 1, 6)
+#print X1
+#Y1 = np.linspace(-1, 1, 6)
+#Z1 = np.linspace(-1, 1, 6)
+#Bx, By, Bz = dipole(m=[0.0, 0.0, 3.0], r=np.meshgrid(X1,Y1,Z1), r0=[0, 0, 0])
+#print np.shape(Bx)
+#print Bx
