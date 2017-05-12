@@ -35,6 +35,7 @@ def electron_path(m, r0):
   
     x = np.array([0., 1.0, 0.])
     v = np.array([200., 0., 0.])
+    
     while count<steps:
         B = b_field(m, x, r0)
         dv = (q * np.cross(v,B) / me) * dt
@@ -52,11 +53,19 @@ r0=np.array([0.0, 0.0, 0.0])
 
 pos,vel = electron_path(m,r0)
 
+totalt=10000*1e-5
+t=np.linspace(0,totalt,10001)
+print t
+
+#plt.figure(1)
+#plt.title("x against t")
+#plt.plot(t, pos[:,0])
+
 plt.figure(1)
-plt.title("pos x against z")
+plt.title("pos z against x")
 plt.plot(pos[:,0], pos[:,2])
 
 plt.figure(2)
-plt.title("v against x")
+plt.title("x against v")
 plt.plot(vel[:,2], pos[:,2])
         
