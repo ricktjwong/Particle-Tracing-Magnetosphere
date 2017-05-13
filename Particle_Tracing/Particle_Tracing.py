@@ -27,6 +27,10 @@ rho = vtk_subs.import_scalar('source/x13_rho1-2000.vti','rho1')
 E = vtk_subs.import_vector('source/x13_Evec-2000.vti','Evec')
 B = vtk_subs.import_vector('source/x13_Bvec-2000.vti','Bvec')
 
+print np.shape(B)
+print np.shape(E)
+print np.shape(rho)
+
 r_IB = 6*dx # Inner boundary
 
 # Plot
