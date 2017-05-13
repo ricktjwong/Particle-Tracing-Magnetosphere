@@ -28,13 +28,13 @@ def electron_path(m, r0):
     steps = 10000
     count = 0
     
-    pos = np.array([0., 1.0, 0.])
-    vel = np.array([200., 0., 0.])
+    pos = np.array([0.0, 0.0, 1.0])
+    vel = np.array([0.0, 0.0, 200.0])
     
     # Initial conditions
   
-    x = np.array([0., 1.0, 0.])
-    v = np.array([200., 0., 0.])
+    x = np.array([0.0, 0.0, 10.0])
+    v = np.array([0.0, 0.0, 200.0])
     
     while count<steps:
         B = b_field(m, x, r0)
@@ -48,7 +48,7 @@ def electron_path(m, r0):
         
     return pos, vel
 
-m=np.array([0.0, 1.0, 0.0]) 
+m=np.array([0.0, 0.0, 1.0]) 
 r0=np.array([0.0, 0.0, 0.0])
 
 pos,vel = electron_path(m,r0)
@@ -57,12 +57,18 @@ totalt=10000*1e-5
 t=np.linspace(0,totalt,10001)
 print t
 
+#plt.figure(1)
+#plt.title("x against t")
+#plt.plot(t, pos[:,0])
+
 plt.figure(1)
-plt.title("x against t")
-plt.plot(t, pos[:,0])
+plt.xlabel("position, x")
+plt.ylabel("position, y")
+plt.plot(pos[:,0], pos[:,1])
 
 plt.figure(2)
-plt.title("pos z against x")
+plt.xlabel("position, x")
+plt.ylabel("position, z")
 plt.plot(pos[:,0], pos[:,2])
 
 plt.figure(3)

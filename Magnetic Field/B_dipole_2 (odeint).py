@@ -9,13 +9,14 @@ Created on Thu May 11 12:06:40 2017
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy.integrate as spi
+from mpl_toolkits.mplot3d import Axes3D
 
 """ Global quantities """
 
 mu = 1e-7
 q = -1.6 * 1e-19
 me = 9.11 * 10e-31
-m = np.array([0.0, 1.0, 0.0]) 
+m = np.array([0.0, 0.0, 1.0]) 
 r0 = np.array([0.0, 0.0, 0.0])
 
 def b_field(m, r, r0):
@@ -35,8 +36,8 @@ def deriv(x,t):
     a = (q * np.cross(v,B) / me)
     return (vx, vy, vz, a[0], a[1], a[2])
     
-xinit = [0.0,1.0,0.0,200.,0.0,0.0]
-t = np.linspace(0.,0.01,1000)
+xinit = [0.0, 1.0, 0.0, 200.0, 0.0, 0.0]
+t = np.linspace(0.,0.1,1000)
 
 soln = spi.odeint(deriv,xinit,t)
 print np.shape(soln)
@@ -48,12 +49,17 @@ vx = soln[:,3]
 vy = soln[:,4] 
 vz = soln[:,5]
 
-plt.figure(1,)
+plt.figure(1)
 plt.plot(x,y)
 plt.xlabel("position, x")
 plt.ylabel("position, y")
 
-plt.figure(2,)
+plt.figure(2)
 plt.plot(x,z)
 plt.xlabel("position, x")
 plt.ylabel("position, z")
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(x,y,z)
+plt.show()
