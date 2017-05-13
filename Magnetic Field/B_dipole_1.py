@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 """ Global quantities """
 
 mu = 1e-7
-q = 1.6 * 1e-19
+q = -1.6 * 1e-19
 me = 9.11 * 10e-31
 
 def b_field(m, r, r0):
@@ -57,15 +57,15 @@ totalt=10000*1e-5
 t=np.linspace(0,totalt,10001)
 print t
 
-#plt.figure(1)
-#plt.title("x against t")
-#plt.plot(t, pos[:,0])
-
 plt.figure(1)
+plt.title("x against t")
+plt.plot(t, pos[:,0])
+
+plt.figure(2)
 plt.title("pos z against x")
 plt.plot(pos[:,0], pos[:,2])
 
-plt.figure(2)
+plt.figure(3)
 plt.title("x against v")
 plt.plot(vel[:,2], pos[:,2])
         
