@@ -15,7 +15,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 mu = 1e-7
 q = 1.6 * 1e-19
-me = 1.67 * 10e-27
+mp = 1.67 * 10e-27
 m = np.array([0.0, 0.0, 5.0e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 
@@ -25,7 +25,7 @@ def b_field(m, r, r0):
     term1 = 3.*r_diff*(np.dot(m, r_diff))/r_mag**5
     term2 = m/r_mag**3
     B = mu*(term1 - term2) 
-    uniform = [0,0,5e-9]
+    uniform = [0,0,5e-9]    # option for constant B field
     return B
 
 def deriv(x,t):
@@ -34,13 +34,13 @@ def deriv(x,t):
     x=np.array([xx, xy, xz])
     v=np.array([vx, vy, vz])
     B = b_field(m, x, r0)
-    a = (q * np.cross(v,B) / me)
+    a = (q * np.cross(v,B) / mp)
     return (vx, vy, vz, a[0], a[1], a[2])
     
 xinit = [-30.4e6, 0.0, 0.0, 1000.0, 0.0, 0.0]
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
-r = me*xinit[3]/(q*binit)   #Larmar radius
-T = 2*np.pi*r/xinit[3]      #Gyroperiod particle drift
+r = mp*xinit[3]/(q*binit)   # Larmar radius
+T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
