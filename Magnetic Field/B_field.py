@@ -27,7 +27,7 @@ def dv_dx(x,t):
     ax,ay,az=0.0,q*vx*B/m,0.0
     return [vx, vy, vz, ax, ay, az]
 
-xinit = [0.0, 0.0, 0.0, 1.e2, 0.0, 0.0] # x0, y0, z0, vx0, vy0, vz0
+xinit = [0.0, 0.0, 0.0, 2.e2, 0.0, 0.0] # x0, y0, z0, vx0, vy0, vz0
 t = np.linspace(0., 0.01, 1000)
 soln = odeint(dv_dx,xinit,t)
 print soln
