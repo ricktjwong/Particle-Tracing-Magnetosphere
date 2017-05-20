@@ -13,7 +13,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 """ Global quantities """
 
-mu = 1e-7
+mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 10e-27
 m = np.array([0.0, 0.0, 5.0e22]) 
@@ -24,7 +24,7 @@ def b_field(m, r, r0):
     r_mag = np.linalg.norm(r_diff)
     term1 = 3.*r_diff*(np.dot(m, r_diff))/r_mag**5
     term2 = m/r_mag**3
-    B = mu*(term1 - term2) 
+    B = mu*(term1 - term2)/(4*np.pi)
     uniform = [0,0,5e-9]    # option for constant B field
     return B
 
