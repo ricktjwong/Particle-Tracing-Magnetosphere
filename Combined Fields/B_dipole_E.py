@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 11 12:06:40 2017
+Created on Sat May 20 14:35:03 2017
 
 @author: ricktjwong
 """
@@ -29,15 +29,16 @@ def b_field(m, r, r0):
     return B
 
 def deriv(x,t):
-    xx, xy, xz = x[0], x[1], x[2]
-    vx, vy, vz = x[3], x[4], x[5]
+    xx, xy, xz = x[0], x[1], x[2]   # Initial conditions position
+    vx, vy, vz = x[3], x[4], x[5]   # Initial conditions velocity
     x=np.array([xx, xy, xz])
     v=np.array([vx, vy, vz])
     B = b_field(m, x, r0)
-    a = (q * np.cross(v,B) / mp)
+    a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
     
 xinit = [-30.4e6, 0.0, 0.0, 1000.0, 0.0, 0.0]
+E = np.array([0, 0, 0])
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
@@ -46,15 +47,10 @@ print T
 
 t = np.linspace(0,1,1000)*10*T
 
-soln = spi.odeint(deriv,xinit,t)
-print np.shape(soln)
+soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
-x = soln[:,0]  
-y = soln[:,1]   
-z = soln[:,2]
-vx = soln[:,3]  
-vy = soln[:,4] 
-vz = soln[:,5]
+x, y, z = soln[:,0], soln[:,1], soln[:,2]
+vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
 plt.figure(1)
 plt.plot(x,y)
