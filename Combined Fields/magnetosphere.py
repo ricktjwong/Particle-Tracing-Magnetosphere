@@ -22,7 +22,6 @@ RP = 6.4e6
 
 plt.close('all')
 
-
 #%% Load Data
 
 # Load grid spacing
@@ -36,34 +35,46 @@ rho = vtk_subs.import_scalar('source/x13_rho1-2000.vti','rho1')
 E = vtk_subs.import_vector('source/x13_Evec-2000.vti','Evec')
 B = vtk_subs.import_vector('source/x13_Bvec-2000.vti','Bvec')
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-
 x, y, z = np.meshgrid(np.linspace(-60, 60, 120),
                       np.linspace(-60, 60, 120),
                       np.linspace(-60, 60, 120))
 
-Bx = B[:,:,:,0]
-By = B[:,:,:,1]
-Bz = B[:,:,:,2]
-#Bx1 = Bx[::10,::10,::10]
-#By1 = By[::10,::10,::10]
-#Bz1 = Bz[::10,::10,::10]
+Bx, By, Bz = B[:,:,:,0], B[:,:,:,1], B[:,:,:,2]
+Ex, Ey, Ez = E[:,:,:,0], E[:,:,:,1], E[:,:,:,2]
 
-print np.shape(x)
-print np.shape(Bx1)
+def plotQuiver_B(scale):    
+    ax.quiver(x[::scale,::scale,::scale], 
+              y[::scale,::scale,::scale],
+              z[::scale,::scale,::scale], 
+              Bx[::scale,::scale,::scale],
+              By[::scale,::scale,::scale],
+              Bz[::scale,::scale,::scale], length=10, arrow_length_ratio=.5, normalize=True)
+    
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
+    
+def plotQuiver_E(scale):    
+    ax.quiver(x[::scale,::scale,::scale], 
+              y[::scale,::scale,::scale],
+              z[::scale,::scale,::scale], 
+              Ex[::scale,::scale,::scale],
+              Ey[::scale,::scale,::scale],
+              Ez[::scale,::scale,::scale], length=10, arrow_length_ratio=.5, normalize=True)
+        
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
 
-ax.quiver(x[::10,::10,::10], y[::10,::10,::10], z[::10,::10,::10], Bx[::10,::10,::10], By[::10,::10,::10], Bz[::10,::10,::10], length=12000)
-#ax.quiver(x, y, z, Bx, By, Bz, length=0.2)
-#ax.quiver(x, y, z, Bx1, By1, Bz1, length=10)
+fig = plt.figure(1)
+ax = fig.gca(projection='3d')
 
+plotQuiver_B(15)
 
 #ax.set_xlim3d(-60,60)
 #ax.set_ylim3d(-60,60)
 #ax.set_zlim3d(-60,60)
 
-ax.set_xlabel('X axis')
-ax.set_ylabel('Y axis')
-ax.set_zlabel('Z axis')
-
-plt.show()
+fig2 = plt.figure(2)
+ax = fig2.gca(projection='3d')
+plotQuiver_E(20)
