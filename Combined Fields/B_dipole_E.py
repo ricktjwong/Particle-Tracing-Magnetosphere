@@ -15,7 +15,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
-mp = 1.67 * 10e-27
+mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, 5.0e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 

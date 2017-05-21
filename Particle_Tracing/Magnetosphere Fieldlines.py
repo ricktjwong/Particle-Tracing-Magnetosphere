@@ -15,15 +15,15 @@ plt.close('all')
 #%% Load Data
 
 # Load grid spacing
-x,y,z = vtk_subs.import_space('x13_rho1-2000.vti')
+x,y,z = vtk_subs.import_space('source/x13_rho1-2000.vti')
 dx = x[1]-x[0]
 dy = y[1]-y[0]
 dz = z[1]-z[0]
 
 # Load variables
-rho = vtk_subs.import_scalar('x13_rho1-2000.vti','rho1')
-E = vtk_subs.import_vector('x13_Evec-2000.vti','Evec')
-B = vtk_subs.import_vector('x13_Bvec-2000.vti','Bvec')
+rho = vtk_subs.import_scalar('source/x13_rho1-2000.vti','rho1')
+E = vtk_subs.import_vector('source/x13_Evec-2000.vti','Evec')
+B = vtk_subs.import_vector('source/x13_Bvec-2000.vti','Bvec')
 
 #%%
 ''' coordinate plane fields ; index = 60 is approx at x=y=z=0 ''' 

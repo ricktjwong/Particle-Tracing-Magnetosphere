@@ -53,7 +53,7 @@ def deriv(r,t):
     
     return [vx,vy,vz,xacc,yacc,zacc]
 
-init = [-10,0,0,100,0.,10]
+init = [-10,0,0,100,0,0]
 initC = [-10,0,0,100,0,0]
 solnC = spi.odeint(derivC,initC,t)
 soln = spi.odeint(deriv,init,t)
