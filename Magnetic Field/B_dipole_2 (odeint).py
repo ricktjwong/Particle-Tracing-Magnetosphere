@@ -36,6 +36,15 @@ def deriv(x,t):
     B = b_field(m, x, r0)
     a = (q * np.cross(v,B) / mp)
     return (vx, vy, vz, a[0], a[1], a[2])
+
+def b_field_values():
+    pos = np.linspace(-60, 60, 120)
+    b = b_field(m,[pos,pos,pos],r0)
+    return b
+
+pos = np.linspace(-60, 60, 120)
+x = b_field(m,[pos,pos,pos],r0)
+print x
     
 xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))

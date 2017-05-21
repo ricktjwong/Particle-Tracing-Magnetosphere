@@ -9,6 +9,7 @@ Created on Thu May 11 12:06:40 2017
 from matplotlib import rcParams
 import numpy as np
 from matplotlib import pyplot as plt
+import mayavi.mlab as mlab
 
 rcParams.update({'figure.autolayout': True})
 
@@ -34,28 +35,20 @@ def dipole(m, r, r0):
 
     return B
 
-X = np.linspace(-1, 1)
-Y = np.linspace(-1, 1)
-Z = np.linspace(-1, 1)
+def plotQuiver_B():    
+    obj = mlab.quiver3d(x, y, z, Bx, By, Bz,
+                   line_width=0.1, 
+                   scale_factor=0.2, 
+                   scale_mode='scalar', 
+                   mode='arrow', 
+                   mask_points=200)
+    return obj
+
+X, Y, Z = np.linspace(-1, 1), np.linspace(-1, 1), np.linspace(-1, 1)
+x, y ,z = np.meshgrid(X, Y, Z)
 
 # Magnetic dipole orientated in the z direction
-#Bx, By, Bz = dipole(m=[0.0, 0.0, 0.1], r=np.meshgrid(X, Y, Z), r0=[0.0,0.0,0.0])
-#print np.shape(Bz)
-print dipole(m=[0.0, 1.0, 3.0], r=[0.0, 1.0, 2.0], r0=[0.0, 1.0, 0.0])
+Bx, By, Bz = dipole(m=[0.0, 0.0, 0.1], r=np.meshgrid(X, Y, Z), r0=[0.0,0.0,0.0])
 
-#Bx, By = dipole(m=[0.0, 0.1], r=np.meshgrid(X, Y), r0=[0.0,0.0])
-#
-#plt.figure(figsize=(5, 5))
-#plt.streamplot(X, Y, Bx, By)
-#plt.margins(0, 0)
-
-
-# Works in 3 dimensions as well:
-
-#X1 = np.linspace(-1, 1, 6)
-#print X1
-#Y1 = np.linspace(-1, 1, 6)
-#Z1 = np.linspace(-1, 1, 6)
-#Bx, By, Bz = dipole(m=[0.0, 0.0, 3.0], r=np.meshgrid(X1,Y1,Z1), r0=[0, 0, 0])
-#print np.shape(Bx)
-#print Bx
+B_field = plotQuiver_B()
+mlab.show(B_field)

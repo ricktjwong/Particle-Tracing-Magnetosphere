@@ -37,7 +37,7 @@ def plotQuiver_B():
                    scale_factor=4.0, 
                    scale_mode='scalar', 
                    mode='arrow', 
-                   mask_points=300)
+                   mask_points=600)
     return obj
     
     
@@ -50,7 +50,7 @@ def plotQuiver_E():
                    mask_points=300)
     return obj
 
-#B_field = plotQuiver_B()
-E_field = plotQuiver_E()
-#mlab.show(B_field)
-mlab.show(E_field)
+B_field = plotQuiver_B()
+#E_field = plotQuiver_E()
+mlab.show(B_field)
+#mlab.show(E_field)
