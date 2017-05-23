@@ -18,6 +18,7 @@ q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, 1e4]) 
 r0 = np.array([0.0, 0.0, 0.0])
+RE = 6.4e6
 
 def b_field(m, r, r0):
     r_diff = r - r0
@@ -37,7 +38,9 @@ def deriv(x,t):
     a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
     
+
 xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
+#xinit = [-5*RE, 0.0, 0.5*RE, 1e8, 0.0, 0.0]
 E = np.array([0, 0, 0])
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
 r = mp*xinit[3]/(q*binit)   # Larmar radius
@@ -73,8 +76,22 @@ plt.ylabel("Z-axis")
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(x,y,z)
+
 ax.set(xlim=[-12,12],ylim=[-12,12],zlim=[-12,12])
 ax.set_xlabel('X axis')
 ax.set_ylabel('Y axis')
 ax.set_zlabel('Z axis')
 plt.show()
+
+posr = np.vstack((x,y,z)).T
+
+def CheckEnter(r):
+     for i in r:
+        dist = np.linalg.norm(i)
+        if dist < RE :
+            print "Enter"
+        elif dist > RE :
+            print "did not enter"
+            print dist
+#Track = CheckEnter(posr)
+            
