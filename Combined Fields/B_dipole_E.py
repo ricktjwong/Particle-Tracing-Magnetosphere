@@ -45,18 +45,22 @@ T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
-t = np.linspace(0,10,1000)*10*T
+t = np.linspace(0,10,1000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
 x, y, z = soln[:,0], soln[:,1], soln[:,2]
 vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
-plt.figure(1)
-plt.plot(x,y)
-plt.title('X against Y')
+
+fig = plt.figure(1)
+ax = fig.add_subplot(1, 1,1)
+ax.set_aspect(1)
+ax.plot(x,y)
+ax.set_title('X against Y')
 #plt.xlim([-600-3.04e7,-3.04e7])
 #plt.ylim([0,600])
+ax.set_aspect('equal')
 plt.xlabel("X axis")
 plt.ylabel("Y-axis")
 
@@ -69,6 +73,7 @@ plt.ylabel("Z-axis")
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(x,y,z)
+ax.set(xlim=[-12,12],ylim=[-12,12],zlim=[-12,12])
 ax.set_xlabel('X axis')
 ax.set_ylabel('Y axis')
 ax.set_zlabel('Z axis')

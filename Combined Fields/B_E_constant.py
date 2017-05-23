@@ -19,9 +19,9 @@ mp = 1.67 * 1e-27
 r0 = np.array([0.0, 0.0, 0.0])
 
 """ Initial conditions"""
-B = [0, 0, 100]
-E = np.array([0, 0, 10])
-xinit = [-10, 0.0, 0.0, 100.0, 0.0, 0.0]
+B = [0, 0, 1e-9]
+E = np.array([1e-3, 0, 0])
+xinit = [-10, 0.0, 0.0, 400.0, 0.0, 0.0]
 
 def deriv(x,t):
     xx, xy, xz = x[0], x[1], x[2]   # Initial conditions position
@@ -37,7 +37,7 @@ T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
-t = np.linspace(0,2,1000)*10*T
+t = np.linspace(0,100,3000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
