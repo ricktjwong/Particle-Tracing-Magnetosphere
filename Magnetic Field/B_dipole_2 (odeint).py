@@ -37,14 +37,14 @@ def deriv(x,t):
     a = (q * np.cross(v,B) / mp)
     return (vx, vy, vz, a[0], a[1], a[2])
 
-def b_field_values():
-    pos = np.linspace(-60, 60, 120)
-    b = b_field(m,[pos,pos,pos],r0)
-    return b
-
-pos = np.linspace(-60, 60, 120)
-x = b_field(m,[pos,pos,pos],r0)
-print x
+#def b_field_values():
+#    pos = np.linspace(-60, 60, 120)
+#    b = b_field(m,[pos,pos,pos],r0)
+#    return b
+#
+#pos = np.linspace(-60, 60, 120)
+#x = b_field(m,[pos,pos,pos],r0)
+#print x
     
 xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
@@ -80,4 +80,7 @@ plt.ylabel("position, z")
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(x,y,z)
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
 plt.show()

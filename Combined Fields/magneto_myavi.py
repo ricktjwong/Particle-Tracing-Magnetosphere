@@ -34,10 +34,11 @@ Ex, Ey, Ez = E[:,:,:,0], E[:,:,:,1], E[:,:,:,2]
 def plotQuiver_B():    
     obj = mlab.quiver3d(x, y, z, Bx, By, Bz,
                    line_width=0.5, 
-                   scale_factor=4.0, 
+                   scale_factor=3.0, 
                    scale_mode='scalar', 
                    mode='arrow', 
                    mask_points=600)
+#                  colormap='copper'
     return obj
     
     

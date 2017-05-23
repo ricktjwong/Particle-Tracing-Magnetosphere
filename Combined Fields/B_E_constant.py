@@ -20,7 +20,7 @@ r0 = np.array([0.0, 0.0, 0.0])
 
 """ Initial conditions"""
 B = [0, 0, 100]
-E = np.array([0, 0, 100])
+E = np.array([0, 0, 10])
 xinit = [-10, 0.0, 0.0, 100.0, 0.0, 0.0]
 
 def deriv(x,t):
@@ -46,17 +46,22 @@ vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
 plt.figure(1)
 plt.plot(x,y)
+plt.title('X against Y')
 #plt.xlim([-600-3.04e7,-3.04e7])
 #plt.ylim([0,600])
-plt.xlabel("position, x")
-plt.ylabel("position, y")
+plt.xlabel("X axis")
+plt.ylabel("Y-axis")
 
 plt.figure(2)
 plt.plot(x,z)
-plt.xlabel("position, x")
-plt.ylabel("position, z")
+plt.title('X against Z')
+plt.xlabel("X axis")
+plt.ylabel("Z-axis")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(x,y,z)
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
 plt.show()

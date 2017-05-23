@@ -16,7 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
-m = np.array([0.0, 0.0, 5.0e22]) 
+m = np.array([0.0, 0.0, 1e4]) 
 r0 = np.array([0.0, 0.0, 0.0])
 
 def b_field(m, r, r0):
@@ -37,7 +37,7 @@ def deriv(x,t):
     a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
     
-xinit = [-30.4e6, 0.0, 0.0, 1000.0, 0.0, 0.0]
+xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
 E = np.array([0, 0, 0])
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
 r = mp*xinit[3]/(q*binit)   # Larmar radius
@@ -45,7 +45,7 @@ T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
-t = np.linspace(0,1,1000)*10*T
+t = np.linspace(0,10,1000)*10*T
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -54,17 +54,22 @@ vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
 plt.figure(1)
 plt.plot(x,y)
+plt.title('X against Y')
 #plt.xlim([-600-3.04e7,-3.04e7])
 #plt.ylim([0,600])
-plt.xlabel("position, x")
-plt.ylabel("position, y")
+plt.xlabel("X axis")
+plt.ylabel("Y-axis")
 
 plt.figure(2)
 plt.plot(x,z)
-plt.xlabel("position, x")
-plt.ylabel("position, z")
+plt.title('X against Z')
+plt.xlabel("X axis")
+plt.ylabel("Z-axis")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(x,y,z)
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
 plt.show()
