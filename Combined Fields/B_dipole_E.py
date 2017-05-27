@@ -38,15 +38,15 @@ def deriv(x,t):
     a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
     
-xinit = [-5*RE, 0.0, 0.5*RE, 1e8, 0.0, 0.0]
-E = np.array([0, 0, 0])
+xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
+E = np.array([1e-2, 0, 0])
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
-t = np.linspace(0,1,1000)*10*T
+t = np.linspace(0,12,2500)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -67,6 +67,8 @@ plt.ylabel("position, z")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+plt.xlabel("position, x")
+plt.ylabel("position, y")
 ax.plot(x,y,z)
 plt.show()
 
@@ -74,12 +76,44 @@ plt.show()
 posr = np.vstack((x,y,z)).T
 
 def CheckEnter(r):
-     for i in r:
+    Enter = False
+    for i in r:
         dist = np.linalg.norm(i)
         if dist < RE :
-            print "Enter"
+            Enter = True
         elif dist > RE :
-            print "did not enter"
-            print dist
+            Enter = False
+        if Enter == True:
+            print "Enter"
+#        elif Enter == False:
+#            print "did not enter"
+            
 #Track = CheckEnter(posr)
+
+''' Energy Graphs'''
+
+V_xyz = np.vstack((vx,vy,vz)).T
+V_ = []
+for i in V_xyz:
+    V_.append(np.linalg.norm(i))
+V_ = np.array(V_)
+KE = 0.5*mp*V_**2
+    
+plt.figure(4)
+fig2, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax1.plot(t,V_,'b')
+ax2.plot(t,KE,'r')
+ax1.set_xlabel('time/s')
+ax1.set_ylabel('|V|', color='blue')
+ax1.tick_params('b', colors='blue')
+
+ax2.set_ylabel('KE', color='r')
+ax2.tick_params('r', colors='r')
+#ax1.set_ylim(bottom=-4.8, top=4.8)
+#ax1.set_xlim(left=0, right=0.02)
+#ax2.set_xlim(left=0, right=0.02)
+plt.show()
+
+
             
