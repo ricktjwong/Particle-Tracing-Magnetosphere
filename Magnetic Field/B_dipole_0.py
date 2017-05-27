@@ -38,10 +38,10 @@ def dipole(m, r, r0):
 def plotQuiver_B():    
     obj = mlab.quiver3d(x, y, z, Bx, By, Bz,
                    line_width=0.1, 
-                   scale_factor=0.2, 
+                   scale_factor=0.1, 
                    scale_mode='scalar', 
                    mode='arrow', 
-                   mask_points=200)
+                   mask_points=100)
     return obj
 
 X, Y, Z = np.linspace(-1, 1), np.linspace(-1, 1), np.linspace(-1, 1)
