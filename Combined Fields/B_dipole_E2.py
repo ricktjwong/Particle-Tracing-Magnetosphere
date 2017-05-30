@@ -98,7 +98,11 @@ for i in V_xyz:
     V_.append(np.linalg.norm(i))
 V_ = np.array(V_)
 KE = 0.5*mp*V_**2
-    
+
+mod_r = []    
+for i in posr:
+    mod_r.append(np.linalg.norm(i))
+
 plt.figure(4)
 fig2, ax1 = plt.subplots()
 ax2 = ax1.twinx()
@@ -121,9 +125,13 @@ plt.figure(5)
 fig3, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 ax3 = ax1.twinx()
+ax4 = ax1.twinx()
+
 ax1.plot(t,x,'r')
 ax2.plot(t,y,'g')
 ax3.plot(t,z,'b')
+ax4.plot(t,mod_r,'o')
+
 
 ax1.set_xlabel('time/s')
 ax1.set_ylabel('x/m', color='red')
@@ -134,5 +142,8 @@ ax2.tick_params('y', colors='g')
 
 ax3.set_ylabel('z/m', color='b')
 ax3.tick_params('y', colors='b')
+
+ax4.set_ylabel('r/m', color='black')
+ax4.tick_params('y', colors='black')
 
 plt.show()
