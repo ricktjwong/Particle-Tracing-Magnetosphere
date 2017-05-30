@@ -48,7 +48,7 @@ def plotQuiver_B(scale):
               z[::scale,::scale,::scale], 
               Bx[::scale,::scale,::scale],
               By[::scale,::scale,::scale],
-              Bz[::scale,::scale,::scale], length=5, arrow_length_ratio=.5)
+              Bz[::scale,::scale,::scale], length=5, arrow_length_ratio=.5, normalize=True)
     
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
@@ -60,7 +60,7 @@ def plotQuiver_E(scale):
               z[::scale,::scale,::scale], 
               Ex[::scale,::scale,::scale],
               Ey[::scale,::scale,::scale],
-              Ez[::scale,::scale,::scale], length=10, arrow_length_ratio=.5)
+              Ez[::scale,::scale,::scale], length=10, arrow_length_ratio=.5, normalize=True)
         
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

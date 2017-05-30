@@ -16,7 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
-m = np.array([0.0, 0.0, 1e4]) 
+m = np.array([0.0, 0.0, 1e5]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
 
@@ -39,7 +39,7 @@ def deriv(x,t):
     return (vx, vy, vz, a[0], a[1], a[2])
     
 
-xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
+xinit = [-10, 0.0, 0.0, 1000, 0.0, 0.0]
 #xinit = [-5*RE, 0.0, 0.5*RE, 1e8, 0.0, 0.0]
 E = np.array([0, 0, 0])
 binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
