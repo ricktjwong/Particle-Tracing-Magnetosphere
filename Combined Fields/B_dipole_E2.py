@@ -104,16 +104,35 @@ fig2, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 ax1.plot(t,V_,'b')
 ax2.plot(t,KE,'r')
+
 ax1.set_xlabel('time/s')
 ax1.set_ylabel('|V|', color='blue')
-ax1.tick_params('b', colors='blue')
+ax1.tick_params('y', colors='blue')
 
 ax2.set_ylabel('KE', color='r')
-ax2.tick_params('r', colors='r')
+ax2.tick_params('y', colors='r')
 #ax1.set_ylim(bottom=-4.8, top=4.8)
 #ax1.set_xlim(left=0, right=0.02)
 #ax2.set_xlim(left=0, right=0.02)
 plt.show()
 
 
-            
+plt.figure(5)
+fig3, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax3 = ax1.twinx()
+ax1.plot(t,x,'r')
+ax2.plot(t,y,'g')
+ax3.plot(t,z,'b')
+
+ax1.set_xlabel('time/s')
+ax1.set_ylabel('x/m', color='red')
+ax1.tick_params('y', colors='red')
+
+ax2.set_ylabel('y/m', color='g')
+ax2.tick_params('y', colors='g')
+
+ax3.set_ylabel('z/m', color='b')
+ax3.tick_params('y', colors='b')
+
+plt.show()
