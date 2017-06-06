@@ -50,7 +50,7 @@ T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 
-t = np.linspace(0,40,2500)
+t = np.linspace(0,15,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -94,8 +94,6 @@ def CheckEnter(r):
             
 #Track = CheckEnter(posr)
 
-''' Energy Graphs'''
-
 V_xyz = np.vstack((vx,vy,vz)).T
 V_ = []
 for i in V_xyz:
@@ -106,7 +104,81 @@ KE = 0.5*mp*V_**2
 mod_r = []    
 for i in posr:
     mod_r.append(np.linalg.norm(i))
+    
+    
+'''finding tangential vel (along B field lines) '''
+V_para_ = []
+for i,j in zip(V_xyz, posr):
+    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
+    V_para_.append( np.dot(i , B_hat)*B_hat )
+V_para_mod =[]
+for i in V_para_:
+    V_para_mod.append(np.linalg.norm(i))
+    
+V_parax=[]
+V_paray=[]
+V_paraz=[]    
 
+for i in V_para_:
+    V_parax.append(i[0])
+    V_paray.append(i[1])
+    V_paraz.append(i[2])
+
+V_perp_ = []
+for i,j in zip(V_xyz, posr):
+    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
+    V_perp_.append( np.cross(i , B_hat) )
+V_perp_mod =[]
+for i in V_perp_:
+    V_perp_mod.append(np.linalg.norm(i))
+    
+plt.figure()
+plt.plot(t , V_para_mod , 'r')
+plt.title("Parallel Velocity Vs Time")
+plt.xlabel('time')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+plt.plot(t , V_perp_mod , 'r')
+plt.title("Perpendicular Velocity Vs Time ")
+plt.xlabel('time')
+plt.ylabel('perp velocity')
+
+plt.figure()
+plt.plot(x , V_para_mod , 'r')
+plt.title("Parallel Velocity Vs Distance")
+plt.xlabel('x-distance/m')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+plt.plot(mod_r, V_para_mod ,' b')
+plt.title("Parallel Velocity Vs AbsDistance")
+plt.xlabel('AbsDistance/m')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+fig4, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax3 = ax1.twinx()
+
+ax1.plot(x,V_parax,'r')
+ax2.plot(x,V_paray,'g')
+ax3.plot(x,V_paraz,'b')
+
+ax1.set_xlabel('x-distance/m')
+ax1.set_ylabel('V_parax', color='red')
+ax1.tick_params('y', colors='red')
+
+ax2.set_ylabel('V_paray', color='g')
+ax2.tick_params('y', colors='g')
+
+ax3.set_ylabel('V_paraz', color='b')
+ax3.tick_params('y', colors='b')
+
+plt.show()
+    
+''' Energy Graphs'''''' Energy Graphs'''    
+    
 plt.figure(4)
 fig2, ax1 = plt.subplots()
 ax2 = ax1.twinx()
