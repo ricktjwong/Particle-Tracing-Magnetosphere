@@ -24,7 +24,7 @@ r0 = np.array([0.0, 0.0, 0.0])
 
 """ Initial conditions"""
 B = [0, 0, 1e-5]
-E = np.array([1e-4, 0, 0])
+E = np.array([0.0, 1e-4, 0.0])
 xinit = [-10, 0.0, 0.0, 0.0, 0.0, 0.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
@@ -80,43 +80,44 @@ v_ = np.array(v_)
 KE = 0.5*mp*v_**2
 KE_ave = np.average(KE)
 KE_var = np.var(KE)
-print KE_ave
 
 posr = np.vstack((x,y,z)).T
 PE = []
 for i in posr:
-    PE.append(q*np.dot(i-x0, E))
-#print PE
-
-plt.figure(4)
-plt.plot(t, PE)
-plt.xlabel("Time (s)")
-plt.ylabel("PE")
+    PE.append(q*np.dot((x0-i), E))
 
 TE = []
 for i,j in zip(KE, PE):
     TE.append(i+j)
 
-plt.figure(5)
-plt.plot(t, TE)
+plt.figure(4)
+TE, = plt.plot(t, TE, linestyle='--', color='black')
+PE, = plt.plot(t, PE, color='red')
+KE, = plt.plot(t, KE, color='blue')
+plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
 plt.xlabel("Time (s)")
-plt.ylabel("TE")
-    
-plt.figure(6)
-fig2, ax1 = plt.subplots()
-ax2 = ax1.twinx()
-ax3 = ax1.twinx()
-#ax1.plot(t,v_,'b')
-ax2.plot(t,KE,'r')
-#ax3.plot(t,PE,'g')
-ax1.set_xlabel('time/s')
-ax1.set_ylabel('|v|', color='blue')
-ax1.tick_params('b', colors='blue')
+plt.ylabel("Energy")
 
-ax2.set_ylabel('KE', color='r')
-ax2.tick_params('r', colors='r')
-
-#ax1.set_xlim(left=0, right=0.02)
-#ax2.set_xlim(left=0, right=0.02)
-
-
+#fig=plt.figure()
+#ax=fig.add_subplot(111, label="1")
+#ax.set_xlabel('Time (s)')
+#ax.set_ylabel('KE')
+#ax2=fig.add_subplot(111, label="2", frame_on=False)
+#ax3=fig.add_subplot(111, label="3", frame_on=False)
+#ax2.set_ylabel('PE')
+#ax2.yaxis.set_label_position("right")
+#
+#ax.plot(t, KE, color="b")
+##ax.set_ylim([-7, 7])
+##ax2.set_ylim([-0.2, 0.2])
+#ax.set_xlim([0, 0.02])
+#ax2.set_xlim([0, 0.02])
+#ax.tick_params(
+#    axis='y',          # changes apply to the x-axis
+#    which='both',      # both major and minor ticks are affected
+#    right='off')       # ticks along the top edge are off)
+#ax2.plot(t, PE, '-', color="r")
+#ax3.plot(t, TE, '-', color="g")
+#ax2.yaxis.tick_right()
+##ax2.set_yticks([])
+#ax2.axes.get_xaxis().set_visible(False)

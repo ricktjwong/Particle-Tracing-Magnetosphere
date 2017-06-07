@@ -43,6 +43,8 @@ def deriv(x,t):
     return (vx, vy, vz, a[0], a[1], a[2])
     
 xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
+x0 = np.array([xinit[0], xinit[1], xinit[2]])
+v0 = np.array([xinit[3], xinit[4], xinit[5]])
 E = np.array([1e-2, 0, 0])
 B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
 binit = np.linalg.norm(B0)
@@ -97,107 +99,52 @@ def CheckEnter(r):
             
 #Track = CheckEnter(posr)
 
-V_xyz = np.vstack((vx,vy,vz)).T
-V_ = []
-for i in V_xyz:
-    V_.append(np.linalg.norm(i))
-V_ = np.array(V_)
-KE = 0.5*mp*V_**2
+""" Energy Calculations """
+
+v_xyz = np.vstack((vx,vy,vz)).T
+v_ = []
+for i in v_xyz:
+    v_.append(np.linalg.norm(i))
+v_ = np.array(v_)
+KE = 0.5*mp*v_**2
 
 mod_r = []    
 for i in posr:
     mod_r.append(np.linalg.norm(i))
     
-    
-'''finding tangential vel (along B field lines) '''
-V_para_ = []
-for i,j in zip(V_xyz, posr):
-    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
-    V_para_.append(np.dot(i , B_hat)*B_hat)
-V_para_mod =[]
-for i in V_para_:
-    V_para_mod.append(np.linalg.norm(i))
-    
-V_parax=[]
-V_paray=[]
-V_paraz=[]    
+posr = np.vstack((x,y,z)).T
+PE = []
+for i in posr:
+    PE.append(q*np.dot((x0-i), E))
 
-for i in V_para_:
-    V_parax.append(i[0])
-    V_paray.append(i[1])
-    V_paraz.append(i[2])
+TE = []
+for i,j in zip(KE, PE):
+    TE.append(i+j)
 
-V_perp_ = []
-for i,j in zip(V_xyz, posr):
-    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
-    V_perp_.append(np.cross(i, B_hat))
-V_perp_mod =[]
-for i in V_perp_:
-    V_perp_mod.append(np.linalg.norm(i))
-    
-plt.figure()
-plt.plot(t , V_para_mod , 'r')
-plt.title("Parallel Velocity Vs Time")
-plt.xlabel('time')
-plt.ylabel('parallel velocity')
-
-plt.figure()
-plt.plot(t , V_perp_mod , 'r')
-plt.title("Perpendicular Velocity Vs Time ")
-plt.xlabel('time')
-plt.ylabel('perp velocity')
-
-plt.figure()
-plt.plot(x , V_para_mod , 'r')
-plt.title("Parallel Velocity Vs Distance")
-plt.xlabel('x-distance/m')
-plt.ylabel('parallel velocity')
-
-plt.figure()
-plt.plot(mod_r, V_para_mod ,' b')
-plt.title("Parallel Velocity Vs AbsDistance")
-plt.xlabel('AbsDistance/m')
-plt.ylabel('parallel velocity')
-
-plt.figure()
-fig4, ax1 = plt.subplots()
-ax2 = ax1.twinx()
-ax3 = ax1.twinx()
-
-ax1.plot(x,V_parax,'r')
-ax2.plot(x,V_paray,'g')
-ax3.plot(x,V_paraz,'b')
-
-ax1.set_xlabel('x-distance/m')
-ax1.set_ylabel('V_parax', color='red')
-ax1.tick_params('y', colors='red')
-
-ax2.set_ylabel('V_paray', color='g')
-ax2.tick_params('y', colors='g')
-
-ax3.set_ylabel('V_paraz', color='b')
-ax3.tick_params('y', colors='b')
-
-plt.show()
-    
-''' Energy Graphs'''
-    
 plt.figure(4)
-fig2, ax1 = plt.subplots()
-ax2 = ax1.twinx()
-ax1.plot(t,V_,'b')
-ax2.plot(t,KE,'r')
-
-ax1.set_xlabel('time/s')
-ax1.set_ylabel('|V|', color='blue')
-ax1.tick_params('y', colors='blue')
-
-ax2.set_ylabel('KE', color='r')
-ax2.tick_params('y', colors='r')
-#ax1.set_ylim(bottom=-4.8, top=4.8)
-#ax1.set_xlim(left=0, right=0.02)
-#ax2.set_xlim(left=0, right=0.02)
-plt.show()
+TE, = plt.plot(t, TE, linestyle='--', color='black')
+PE, = plt.plot(t, PE, color='red')
+KE, = plt.plot(t, KE, color='blue')
+plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
+plt.xlabel("Time (s)")
+plt.ylabel("Energy")
+    
+#plt.figure(4)
+#fig2, ax1 = plt.subplots()
+#ax2 = ax1.twinx()
+#ax1.plot(t,V_,'b')
+#ax2.plot(t,KE,'r')
+#
+#ax1.set_xlabel('time/s')
+#ax1.set_ylabel('|V|', color='blue')
+#ax1.tick_params('y', colors='blue')
+#
+#ax2.set_ylabel('KE', color='r')
+#ax2.tick_params('y', colors='r')
+##ax1.set_ylim(bottom=-4.8, top=4.8)
+##ax1.set_xlim(left=0, right=0.02)
+##ax2.set_xlim(left=0, right=0.02)
+#plt.show()
 
 
 plt.figure(5)
@@ -224,5 +171,76 @@ ax3.tick_params('y', colors='b')
 
 ax4.set_ylabel('r/m', color='black')
 ax4.tick_params('y', colors='black')
+
+plt.show()
+
+''' finding tangential vel (along B field lines) '''
+v_para_ = []
+for i,j in zip(v_xyz, posr):
+    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
+    v_para_.append(np.dot(i , B_hat)*B_hat)
+v_para_mod =[]
+for i in v_para_:
+    v_para_mod.append(np.linalg.norm(i))
+    
+v_parax=[]
+v_paray=[]
+v_paraz=[]    
+
+for i in v_para_:
+    v_parax.append(i[0])
+    v_paray.append(i[1])
+    v_paraz.append(i[2])
+
+v_perp_ = []
+for i,j in zip(v_xyz, posr):
+    B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
+    v_perp_.append(np.cross(i, B_hat))
+v_perp_mod =[]
+for i in v_perp_:
+    v_perp_mod.append(np.linalg.norm(i))
+    
+plt.figure()
+plt.plot(t , v_para_mod , 'r')
+plt.title("Parallel Velocity Vs Time")
+plt.xlabel('time')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+plt.plot(t , v_perp_mod , 'r')
+plt.title("Perpendicular Velocity Vs Time ")
+plt.xlabel('time')
+plt.ylabel('perp velocity')
+
+plt.figure()
+plt.plot(x , v_para_mod , 'r')
+plt.title("Parallel Velocity Vs Distance")
+plt.xlabel('x-distance/m')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+plt.plot(mod_r, v_para_mod ,' b')
+plt.title("Parallel Velocity Vs AbsDistance")
+plt.xlabel('AbsDistance/m')
+plt.ylabel('parallel velocity')
+
+plt.figure()
+fig4, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax3 = ax1.twinx()
+
+ax1.plot(x,v_parax,'r')
+ax2.plot(x,v_paray,'g')
+ax3.plot(x,v_paraz,'b')
+
+ax1.set_xlabel('x-distance/m')
+ax1.set_ylabel('v_parax', color='red')
+ax1.tick_params('y', colors='red')
+
+ax2.set_ylabel('v_paray', color='g')
+ax2.tick_params('y', colors='g')
+
+ax3.set_ylabel('v_paraz', color='b')
+ax3.tick_params('y', colors='b')
 
 plt.show()
