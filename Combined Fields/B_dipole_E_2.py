@@ -20,7 +20,7 @@ from mpl_toolkits.mplot3d import Axes3D
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
-m = np.array([0.0, 0.0, 5.0e22]) 
+m = np.array([0.0, 0.0, 5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
 
@@ -44,13 +44,15 @@ def deriv(x,t):
     
 xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
 E = np.array([1e-2, 0, 0])
-binit = np.linalg.norm(b_field(m,[xinit[0],xinit[1],xinit[2]],r0))
+B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
+binit = np.linalg.norm(B0)
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
+print B0
 
-t = np.linspace(0,15,2000)
+t = np.linspace(0,10,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -59,8 +61,9 @@ vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
 plt.figure(1)
 plt.plot(x,y)
-#plt.xlim([-600-3.04e7,-3.04e7])
-#plt.ylim([0,600])
+#plt.xlim([-4e7, 0])
+#plt.ylim([0,1])
+plt.ticklabel_format(useOffset=False)
 plt.xlabel("position, x")
 plt.ylabel("position, y")
 
@@ -71,11 +74,11 @@ plt.ylabel("position, z")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-plt.xlabel("position, x")
-plt.ylabel("position, y")
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
 ax.plot(x,y,z)
 plt.show()
-
 
 posr = np.vstack((x,y,z)).T
 
@@ -110,7 +113,7 @@ for i in posr:
 V_para_ = []
 for i,j in zip(V_xyz, posr):
     B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
-    V_para_.append( np.dot(i , B_hat)*B_hat )
+    V_para_.append(np.dot(i , B_hat)*B_hat)
 V_para_mod =[]
 for i in V_para_:
     V_para_mod.append(np.linalg.norm(i))
@@ -127,7 +130,7 @@ for i in V_para_:
 V_perp_ = []
 for i,j in zip(V_xyz, posr):
     B_hat = (b_field(m,j,r0) / np.linalg.norm(j))
-    V_perp_.append( np.cross(i , B_hat) )
+    V_perp_.append(np.cross(i, B_hat))
 V_perp_mod =[]
 for i in V_perp_:
     V_perp_mod.append(np.linalg.norm(i))
@@ -177,7 +180,7 @@ ax3.tick_params('y', colors='b')
 
 plt.show()
     
-''' Energy Graphs'''''' Energy Graphs'''    
+''' Energy Graphs'''
     
 plt.figure(4)
 fig2, ax1 = plt.subplots()
