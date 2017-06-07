@@ -42,7 +42,24 @@ def deriv(x,t):
     a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
     
-xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
+def rec_spherical(pos_vel):
+    xx , xy , xz = pos_vel[0] , pos_vel[1] , pos_vel[2]
+    vx , vy , vz = pos_vel[3] , pos_vel[4] , pos_vel[5]
+    r_ = np.array([xx,xy,xz])
+    r = np.linalg.norm(r_)
+    rho = np.sqrt(r_[0]**2 + r_[1]**2)
+    V_ = np.array([vx,vy,vz])
+    
+    r_hat = np.array( [r_[0] , r_[1], r_[2]] ) * (1/r)
+    theta_hat = np.array( [ r_[2]*r_[0] , r_[2]*r_[1] , -rho**2 ] ) * (1/(r*rho))
+    phi_hat = np.array( [ -r_[1] , r_[0] , 0] ) * (1/rho)
+    
+    Vr = np.dot(V_ , r_hat )
+    Vtheta = np.dot(V_ , theta_hat)
+    Vphi = np.dot(V_ , phi_hat)     
+    return (Vr , Vtheta , Vphi)
+    
+xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
 E = np.array([1e-2, 0, 0])
@@ -54,7 +71,7 @@ print r
 print T
 print B0
 
-t = np.linspace(0,10,2000)
+t = np.linspace(0,12,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -244,3 +261,39 @@ ax3.set_ylabel('v_paraz', color='b')
 ax3.tick_params('y', colors='b')
 
 plt.show()
+
+''' spherical coordinates '''
+Vrtp = []
+for i in soln:
+    Vrtp.append(rec_spherical(i))
+
+Vradial = []
+Vtheta = []
+Vphi = []
+
+for i in Vrtp:
+    Vradial.append(i[0])
+    Vtheta.append(i[1])
+    Vphi.append(i[2])
+    
+    
+plt.figure()
+plt.plot(t,Vradial ,'r')
+plt.title("Radial Velocity Vs Time ")
+plt.xlabel("time/s")
+plt.ylabel("Radial velocity / ms^-1")
+
+plt.figure()
+plt.plot(t,Vtheta ,'g')
+plt.title("theta Velocity Vs Time ")
+plt.xlabel("time/s")
+plt.ylabel("theta velocity / ms^-1")
+
+plt.figure()
+plt.plot(t,Vphi ,'b')
+plt.title("phi Velocity Vs Time ")
+plt.xlabel("time/s")
+plt.ylabel("phi velocity / ms^-1")
+plt.show()
+          
+    

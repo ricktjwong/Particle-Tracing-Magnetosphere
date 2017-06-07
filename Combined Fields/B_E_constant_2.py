@@ -98,6 +98,49 @@ plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
 plt.xlabel("Time (s)")
 plt.ylabel("Energy")
 
+''' parallel and perpendicular velocities '''
+
+v_para_ = []
+for i in v_xyz:
+    B_hat = np.array(B) / np.linalg.norm(B)
+    v_para_.append( np.dot(i,B_hat) * B_hat )
+
+v_para_mod = []
+for i in v_para_:
+    v_para_mod.append(np.linalg.norm(i))
+
+v_perp_ = []
+for i in v_xyz:
+    B_hat = np.array(B) / np.linalg.norm(B)
+    v_perp_.append(np.cross(i, B_hat))
+v_perp_mod =[]
+for i in v_perp_:
+    v_perp_mod.append(np.linalg.norm(i))
+
+v_perpx = []
+v_perpy = []
+for i in v_perp_:
+    v_perpx.append(i[0])
+    v_perpy.append(i[1])
+
+    
+plt.figure()
+fig1, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+
+ax1.plot(x,v_perpx,'r')
+ax2.plot(x,v_perpy,'g')
+
+ax1.set_xlabel('x-distance/m')
+ax1.set_ylabel('v_perpx', color='red')
+ax1.tick_params('y', colors='red')
+ax1.set_xlim(left=-10, right=-9.8)
+
+ax2.set_ylabel('v_perpy', color='g')
+ax2.tick_params('y', colors='g')
+
+plt.show()
+    
 #fig=plt.figure()
 #ax=fig.add_subplot(111, label="1")
 #ax.set_xlabel('Time (s)')
