@@ -70,7 +70,7 @@ ax.set_ylabel('Y axis')
 ax.set_zlabel('Z axis')
 plt.show()
 
-"""Energy Calculations"""
+""" Energy Calculations """
 
 v_xyz = np.vstack((vx,vy,vz)).T
 v_ = []
@@ -98,7 +98,7 @@ plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
 plt.xlabel("Time (s)")
 plt.ylabel("Energy")
 
-''' parallel and perpendicular velocities '''
+""" Parallel and Perpendicular velocities """
 
 v_para_ = []
 for i in v_xyz:
@@ -122,45 +122,10 @@ v_perpy = []
 for i in v_perp_:
     v_perpx.append(i[0])
     v_perpy.append(i[1])
-
     
-plt.figure()
-fig1, ax1 = plt.subplots()
-ax2 = ax1.twinx()
-
-ax1.plot(x,v_perpx,'r')
-ax2.plot(x,v_perpy,'g')
-
-ax1.set_xlabel('x-distance/m')
-ax1.set_ylabel('v_perpx', color='red')
-ax1.tick_params('y', colors='red')
-ax1.set_xlim(left=-10, right=-9.8)
-
-ax2.set_ylabel('v_perpy', color='g')
-ax2.tick_params('y', colors='g')
-
-plt.show()
-    
-#fig=plt.figure()
-#ax=fig.add_subplot(111, label="1")
-#ax.set_xlabel('Time (s)')
-#ax.set_ylabel('KE')
-#ax2=fig.add_subplot(111, label="2", frame_on=False)
-#ax3=fig.add_subplot(111, label="3", frame_on=False)
-#ax2.set_ylabel('PE')
-#ax2.yaxis.set_label_position("right")
-#
-#ax.plot(t, KE, color="b")
-##ax.set_ylim([-7, 7])
-##ax2.set_ylim([-0.2, 0.2])
-#ax.set_xlim([0, 0.02])
-#ax2.set_xlim([0, 0.02])
-#ax.tick_params(
-#    axis='y',          # changes apply to the x-axis
-#    which='both',      # both major and minor ticks are affected
-#    right='off')       # ticks along the top edge are off)
-#ax2.plot(t, PE, '-', color="r")
-#ax3.plot(t, TE, '-', color="g")
-#ax2.yaxis.tick_right()
-##ax2.set_yticks([])
-#ax2.axes.get_xaxis().set_visible(False)
+plt.figure(5)
+v_perpx, = plt.plot(x,v_perpx, color='red')
+v_perpy, = plt.plot(x,v_perpy, color='blue')
+plt.legend([v_perpx, v_perpy], ['v_perpx', 'v_perpy'])
+plt.xlabel("x-Distance (m)")
+plt.ylabel("Velocity (ms-1)")

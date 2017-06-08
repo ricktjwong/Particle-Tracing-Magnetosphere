@@ -175,7 +175,6 @@ ax2.plot(t,y,'g')
 ax3.plot(t,z,'b')
 ax4.plot(t,mod_r,'o')
 
-
 ax1.set_xlabel('time/s')
 ax1.set_ylabel('x/m', color='red')
 ax1.tick_params('y', colors='red')
