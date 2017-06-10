@@ -43,8 +43,8 @@ def deriv(x,t):
     return (vx, vy, vz, a[0], a[1], a[2])
     
 def rec_spherical(pos_vel):
-    xx, xy, xz = pos_vel[0] , pos_vel[1] , pos_vel[2]
-    vx, vy, vz = pos_vel[3] , pos_vel[4] , pos_vel[5]
+    xx, xy, xz = pos_vel[0], pos_vel[1], pos_vel[2]
+    vx, vy, vz = pos_vel[3], pos_vel[4], pos_vel[5]
     r_ = np.array([xx,xy,xz])
     r = np.linalg.norm(r_)
     rho = np.sqrt(r_[0]**2 + r_[1]**2)
@@ -54,12 +54,12 @@ def rec_spherical(pos_vel):
     theta_hat = np.array([r_[2]*r_[0], r_[2]*r_[1], -rho**2]) * (1/(r*rho))
     phi_hat = np.array([-r_[1], r_[0], 0] ) * (1/rho)
     
-    vr = np.dot(v_ , r_hat )
-    vtheta = np.dot(v_ , theta_hat)
-    vphi = np.dot(v_ , phi_hat)     
-    return (vr , vtheta , vphi)
+    vr = np.dot(v_, r_hat)
+    vtheta = np.dot(v_, theta_hat)
+    vphi = np.dot(v_, phi_hat)     
+    return (vr, vtheta, vphi)
     
-xinit = [-10, 0.0, 0.0, 100, 0.0, 0.0]
+xinit = [10, 0.0, 0, 100, 0.0, 10.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
 E = np.array([0, 0, 0])
@@ -71,7 +71,7 @@ print r
 print T
 print B0
 
-t = np.linspace(0,1,2000)
+t = np.linspace(0,2,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
