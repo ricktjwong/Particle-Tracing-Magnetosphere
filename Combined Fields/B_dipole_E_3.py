@@ -23,6 +23,7 @@ mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, 5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
+t = np.linspace(0,18,2000)
 
 def b_field(m, r, r0):
     r_diff = r - r0
@@ -41,11 +42,9 @@ def deriv(x,t):
     B = b_field(m, x, r0)
     if np.linalg.norm(x) > RE:
         a = q * (np.cross(v,B) + E) / mp
-        print 1
     else:
         a = np.array([0,0,0])
         v = np.array([0,0,0])
-        print 2
     return (v[0], v[1], v[2], a[0], a[1], a[2])
     
 def rec_spherical(pos_vel):
@@ -65,7 +64,41 @@ def rec_spherical(pos_vel):
     vphi = np.dot(v_, phi_hat)     
     return (vr, vtheta, vphi)
     
-xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
+def CheckEnter(trajectory):
+    Enter = False
+    last_posvel = trajectory[-1]
+    xx, xy, xz = last_posvel[0], last_posvel[1], last_posvel[2]
+    r_ = np.array([xx,xy,xz])
+    r_mod = np.linalg.norm(r_)
+    if r_mod <= RE:
+        Enter = True
+    elif r_mod > RE:
+        Enter = False
+    return Enter
+    
+def search(pos_vel):
+    soln_set = []
+    nonsoln_set = []
+    delta_x = RE ## increment of initial x to sweep
+    n = 1 ## counter
+    while n <= 10:
+        traj = spi.odeint(deriv,pos_vel,t)
+        if CheckEnter(traj) == True:
+            soln_set.append(pos_vel)
+            print traj[-1]
+            print "Enter!"
+        elif CheckEnter(traj) == False:
+            print traj[-1]
+            print "Not Enter!"
+            nonsoln_set.append(pos_vel)
+        
+        pos_vel = pos_vel + np.array([delta_x,0,0,0,0,0])
+        n += 1
+    
+    return (soln_set , nonsoln_set)
+        
+    
+xinit = [-7*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
 E = np.array([1e-2, 0, 0])
@@ -76,8 +109,6 @@ T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
 print r
 print T
 print B0
-
-t = np.linspace(0,14,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
@@ -107,20 +138,6 @@ plt.show()
 
 posr = np.vstack((x,y,z)).T
 
-def CheckEnter(r):
-    Enter = False
-    for i in r:
-        dist = np.linalg.norm(i)
-        if dist < RE :
-            Enter = True
-        elif dist > RE :
-            Enter = False
-        if Enter == True:
-            print "Enter"
-#        elif Enter == False:
-#            print "did not enter"
-            
-#Track = CheckEnter(posr)
 
 """ Energy Calculations """
 
