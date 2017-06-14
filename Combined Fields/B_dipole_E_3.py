@@ -20,7 +20,7 @@ from mpl_toolkits.mplot3d import Axes3D
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
-m = np.array([0.0, 0.0, 10000]) 
+m = np.array([0.0, 0.0, 5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
 
@@ -39,8 +39,14 @@ def deriv(x,t):
     x=np.array([xx, xy, xz])
     v=np.array([vx, vy, vz])
     B = b_field(m, x, r0)
-    a = q * (np.cross(v,B) + E) / mp
-    return (vx, vy, vz, a[0], a[1], a[2])
+    if np.linalg.norm(x) > RE:
+        a = q * (np.cross(v,B) + E) / mp
+        print 1
+    else:
+        a = np.array([0,0,0])
+        v = np.array([0,0,0])
+        print 2
+    return (v[0], v[1], v[2], a[0], a[1], a[2])
     
 def rec_spherical(pos_vel):
     xx, xy, xz = pos_vel[0], pos_vel[1], pos_vel[2]
@@ -59,10 +65,10 @@ def rec_spherical(pos_vel):
     vphi = np.dot(v_, phi_hat)     
     return (vr, vtheta, vphi)
     
-xinit = [10, 0.0, 0, 100, 0.0, 10.0]
+xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
-E = np.array([0, 0, 0])
+E = np.array([1e-2, 0, 0])
 B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
 binit = np.linalg.norm(B0)
 r = mp*xinit[3]/(q*binit)   # Larmar radius
@@ -71,7 +77,7 @@ print r
 print T
 print B0
 
-t = np.linspace(0,2,2000)
+t = np.linspace(0,14,2000)
 
 soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 
