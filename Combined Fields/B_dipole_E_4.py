@@ -23,7 +23,7 @@ mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, 5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
-t = np.linspace(0,18,2000)
+t = np.linspace(0,14,2000)
 
 def b_field(m, r, r0):
     r_diff = r - r0
@@ -76,6 +76,29 @@ def CheckEnter(trajectory):
         Enter = False
     return Enter
     
+def CheckEnter2(trajectory):
+    Enter = False
+    step = 200
+    sampled_traj = []
+    true_list = []
+    posr = []
+    for i in trajectory[0::step]:
+        sampled_traj.append(i)
+    for i in sampled_traj:
+        xx , xy , xz = i[0] , i[1] , i[2]
+        r_ = np.array([xx,xy,xz])
+        posr.append(r_)
+    for i in posr:
+        r_mod = np.linalg.norm(i)
+        if r_mod <= RE:
+            true_list.append(True)
+            print true_list
+    if len(true_list) > 1:
+        Enter = True
+    else:
+        Enter = False
+    return Enter
+    
 def search(pos_vel, step, count, sweep_param):
     soln_set = []
     nonsoln_set = []
@@ -88,7 +111,13 @@ def search(pos_vel, step, count, sweep_param):
             print traj[-1]
             print "Enter!"
         elif CheckEnter(traj) == False:
-            print traj[-1]
+            mod_r=[]
+            x,y,z = traj[:,0], traj[:,1], traj[:,2]
+            posr = np.vstack((x,y,z)).T
+            for i in posr:
+                mod_r.append(np.linalg.norm(i))
+            print np.min(mod_r)
+            #print traj[-1]
             print "Not Enter!"
             nonsoln_set.append(pos_vel)
         
@@ -126,9 +155,9 @@ B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
 binit = np.linalg.norm(B0)
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
-print r
-print T
-print B0
+#print r
+#print T
+#print B0
 
 #soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 #
