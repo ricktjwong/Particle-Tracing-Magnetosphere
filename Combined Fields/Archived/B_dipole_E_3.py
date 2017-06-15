@@ -98,7 +98,7 @@ def search(pos_vel):
     return (soln_set , nonsoln_set)
         
     
-xinit = [-7*RE, 0.0, 0.5*RE, 400e3, 0.0, 0.0]
+xinit = [-5*RE, 0.0, 0.5*RE, 100e3, 0.0, 0.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
 E = np.array([1e-2, 0, 0])
