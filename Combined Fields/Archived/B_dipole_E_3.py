@@ -42,7 +42,7 @@ def deriv(x,t):
     B = b_field(m, x, r0)
     if np.linalg.norm(x) > RE:
         a = q * (np.cross(v,B) + E) / mp
-    else:
+    elif np.linalg.norm(x) <= RE:
         a = np.array([0,0,0])
         v = np.array([0,0,0])
     return (v[0], v[1], v[2], a[0], a[1], a[2])
@@ -101,7 +101,7 @@ def search(pos_vel):
 xinit = [-5*RE, 0.0, 0.5*RE, 100e3, 0.0, 0.0]
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
-E = np.array([1e-2, 0, 0])
+E = np.array([0, 0, 0])
 B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
 binit = np.linalg.norm(B0)
 r = mp*xinit[3]/(q*binit)   # Larmar radius

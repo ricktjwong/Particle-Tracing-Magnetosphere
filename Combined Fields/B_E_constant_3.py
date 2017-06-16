@@ -37,6 +37,23 @@ def deriv(x,t):
     a = q * (np.cross(v,B) + E) / mp
     return (vx, vy, vz, a[0], a[1], a[2])
 
+def rec_spherical(pos_vel):
+    xx, xy, xz = pos_vel[0], pos_vel[1], pos_vel[2]
+    vx, vy, vz = pos_vel[3], pos_vel[4], pos_vel[5]
+    r_ = np.array([xx,xy,xz])
+    r = np.linalg.norm(r_)
+    rho = np.sqrt(r_[0]**2 + r_[1]**2)
+    v_ = np.array([vx,vy,vz])
+    
+    r_hat = np.array([r_[0] , r_[1], r_[2]]) * (1/r)
+    theta_hat = np.array([r_[2]*r_[0], r_[2]*r_[1], -rho**2]) * (1/(r*rho))
+    phi_hat = np.array([-r_[1], r_[0], 0] ) * (1/rho)
+    
+    vr = np.dot(v_, r_hat)
+    vtheta = np.dot(v_, theta_hat)
+    vphi = np.dot(v_, phi_hat)     
+    return (vr, vtheta, vphi)
+
 binit = np.linalg.norm(B)
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
@@ -85,6 +102,10 @@ posr = np.vstack((x,y,z)).T
 PE = []
 for i in posr:
     PE.append(q*np.dot((x0-i), E))
+    
+mod_r = []    
+for i in posr:
+    mod_r.append(np.linalg.norm(i))
 
 TE = []
 for i,j in zip(KE, PE):
@@ -96,36 +117,42 @@ PE, = plt.plot(t, PE, color='red')
 KE, = plt.plot(t, KE, color='blue')
 plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
 plt.xlabel("Time (s)")
-plt.ylabel("Energy")
+plt.ylabel("Energy (J)")
 
-""" Parallel and Perpendicular velocities """
 
-v_para_ = []
-for i in v_xyz:
-    B_hat = np.array(B) / np.linalg.norm(B)
-    v_para_.append( np.dot(i,B_hat) * B_hat )
+""" Trajectories """
 
-v_para_mod = []
-for i in v_para_:
-    v_para_mod.append(np.linalg.norm(i))
-
-v_perp_ = []
-for i in v_xyz:
-    B_hat = np.array(B) / np.linalg.norm(B)
-    v_perp_.append(np.cross(i, B_hat))
-v_perp_mod =[]
-for i in v_perp_:
-    v_perp_mod.append(np.linalg.norm(i))
-
-v_perpx = []
-v_perpy = []
-for i in v_perp_:
-    v_perpx.append(i[0])
-    v_perpy.append(i[1])
-    
 plt.figure(5)
-v_perpx, = plt.plot(x,v_perpx, color='red')
-v_perpy, = plt.plot(x,v_perpy, color='blue')
-plt.legend([v_perpx, v_perpy], ['v_perpx', 'v_perpy'])
-plt.xlabel("x-Distance (m)")
+xpos, = plt.plot(t, x, color='red')
+ypos, = plt.plot(t, y, color='blue')
+zpos, = plt.plot(t, z, color='green')
+r, = plt.plot(t, mod_r, linestyle='--', color='black')
+plt.legend([xpos, ypos, zpos, r], ['xpos', 'ypos', 'zpos', 'r'])
+plt.xlabel("Time (s)")
+plt.ylabel("Position (m)")
+
+""" Velocities in spherical coordinates """
+
+vrtp = []
+for i in soln:
+    vrtp.append(rec_spherical(i))
+
+vradial = []
+vtheta = []
+vphi = []
+vtotal = []
+
+for i in vrtp:
+    vradial.append(i[0])
+    vtheta.append(i[1])
+    vphi.append(i[2])
+    vtotal.append((i[0]**2+i[1]**2+i[2]**2)**0.5)
+    
+plt.figure(6)
+radial_v, = plt.plot(t, vradial, color='red')
+theta_v, = plt.plot(t, vtheta, color='blue')
+phi_v, = plt.plot(t, vphi, color='green')
+v_total, = plt.plot(t, vtotal, linestyle='--', color='black')
+plt.legend([xpos, ypos, zpos, r], ['radial_v', 'theta_v', 'phi_v', 'total speed'])
+plt.xlabel("Time (s)")
 plt.ylabel("Velocity (ms-1)")

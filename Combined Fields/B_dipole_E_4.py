@@ -12,8 +12,8 @@ import scipy.integrate as spi
 from mpl_toolkits.mplot3d import Axes3D
 
 #plt.rcParams["figure.figsize"] = (4,3)
-#plt.rcParams["font.family"] = "Times New Roman"
-#plt.rcParams['lines.linewidth'] = 0.8
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams['lines.linewidth'] = 0.8
 
 """ Global quantities """
 
@@ -24,6 +24,7 @@ m = np.array([0.0, 0.0, 5e22])
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
 t = np.linspace(0,14,2000)
+omega = np.array([0.0, 0.0, 7.2921150e-5])
 
 def b_field(m, r, r0):
     r_diff = r - r0
@@ -31,8 +32,16 @@ def b_field(m, r, r0):
     term1 = 3.*r_diff*(np.dot(m, r_diff))/r_mag**5
     term2 = m/r_mag**3
     B = mu*(term1 - term2)/(4*np.pi)
-    uniform = [0,0,5e-9]    # option for constant B field
     return B
+
+def e_field(r):
+    v_convec = np.array([400e2, 0, 0])
+    B_convec = np.array([0, 0, 5e-9])
+    E_convec = -np.cross(v_convec, B_convec)
+    B_corot = b_field(m, r, r0)
+    E_corot = -np.cross(omega, np.cross(r, B_corot))
+    total_E = E_corot + E_convec
+    return total_E
 
 def deriv(x,t):
     xx, xy, xz = x[0], x[1], x[2]   # Initial conditions position
@@ -40,6 +49,7 @@ def deriv(x,t):
     x=np.array([xx, xy, xz])
     v=np.array([vx, vy, vz])
     B = b_field(m, x, r0)
+    E = e_field(x)
     if np.linalg.norm(x) > RE:
         a = q * (np.cross(v,B) + E) / mp
     elif np.linalg.norm(x) < RE:
@@ -129,14 +139,18 @@ def search(pos_vel, step, count, sweep_param):
             pos_vel = pos_vel + np.array([0.0,0.0,delta,0.0,0.0,0.0])
         elif sweep_param == "velx":
             pos_vel = pos_vel + np.array([0.0,0.0,0.0,delta,0.0,0.0])
+        elif sweep_param == "vely":
+            pos_vel = pos_vel + np.array([0.0,0.0,0.0,0.0,delta,0.0])
+        elif sweep_param == "velz":
+            pos_vel = pos_vel + np.array([0.0,0.0,0.0,0.0,0.0,delta])  
         n += 1
     
     return (soln_set, nonsoln_set)
     
-xinit = [-4*RE, 0.0, 0.5*RE, 100e3, 0.0, 0.0]
+xinit = [-5*RE, 0.0, 0.5*RE, 100e3, 0.0, 0.0]
 
 #soln_pos, nonsoln_pos = search(xinit, RE, 10, 'pos')
-soln_vel, nonsoln_vel = search(xinit, 100e3, 10, 'velx')
+#soln_vel, nonsoln_vel = search(xinit, 100e3, 10, 'velx')
 
 def saveToFile(valuesToWrite, sweep_param):
     text_file = open('Data/'+sweep_param+".txt", "w")
@@ -146,111 +160,110 @@ def saveToFile(valuesToWrite, sweep_param):
     text_file.close()
 
 #saveToFile([soln_pos, nonsoln_pos], 'posx')
-saveToFile([soln_vel, nonsoln_vel], 'velx')
+#saveToFile([soln_vel, nonsoln_vel], 'velx')
 
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
-E = np.array([1e-2, 0, 0])
 B0 = b_field(m,[xinit[0],xinit[1],xinit[2]],r0)
 binit = np.linalg.norm(B0)
 r = mp*xinit[3]/(q*binit)   # Larmar radius
 T = 2*np.pi*r/xinit[3]      # Gyroperiod particle drift
-#print r
-#print T
-#print B0
+print r
+print T
+print B0
 
-#soln = spi.odeint(deriv,xinit,t)    # Solve ODE
-#
-#x, y, z = soln[:,0], soln[:,1], soln[:,2]
-#vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
-#
-#plt.figure(1)
-#plt.plot(x,y)
-##plt.xlim([-4e7, 0])
-##plt.ylim([0,1])
-#plt.ticklabel_format(useOffset=False)
-#plt.xlabel("position, x")
-#plt.ylabel("position, y")
-#
-#plt.figure(2)
-#plt.plot(x,z)
-#plt.xlabel("position, x")
-#plt.ylabel("position, z")
-#
-#fig = plt.figure()
-#ax = fig.add_subplot(111, projection='3d')
-#ax.set_xlabel('X axis')
-#ax.set_ylabel('Y axis')
-#ax.set_zlabel('Z axis')
-#ax.plot(x,y,z)
-#plt.show()
-#
-#posr = np.vstack((x,y,z)).T
-#
-#
-#""" Energy Calculations """
-#
-#v_xyz = np.vstack((vx,vy,vz)).T
-#v_ = []
-#for i in v_xyz:
-#    v_.append(np.linalg.norm(i))
-#v_ = np.array(v_)
-#KE = 0.5*mp*v_**2
-#
-#mod_r = []    
-#for i in posr:
-#    mod_r.append(np.linalg.norm(i))
-#    
-#posr = np.vstack((x,y,z)).T
-#PE = []
-#for i in posr:
-#    PE.append(q*np.dot((x0-i), E))
-#
-#TE = []
-#for i,j in zip(KE, PE):
-#    TE.append(i+j)
-#
-#plt.figure(4)
-#TE, = plt.plot(t, TE, linestyle='--', color='black')
-#PE, = plt.plot(t, PE, color='red')
-#KE, = plt.plot(t, KE, color='blue')
-#plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
-#plt.xlabel("Time (s)")
-#plt.ylabel("Energy")
-#
-#""" Trajectories """
-#
-#plt.figure(5)
-#xpos, = plt.plot(t, x, color='red')
-#ypos, = plt.plot(t, y, color='blue')
-#zpos, = plt.plot(t, z, color='green')
-#r, = plt.plot(t, mod_r, linestyle='--', color='black')
-#plt.legend([xpos, ypos, zpos, r], ['xpos', 'ypos', 'zpos', 'r'])
-#plt.xlabel("Time (s)")
-#plt.ylabel("Position (m)")
-#
-#""" Velocities in spherical coordinates """
-#
-#vrtp = []
-#for i in soln:
-#    vrtp.append(rec_spherical(i))
-#
-#vradial = []
-#vtheta = []
-#vphi = []
-#vtotal = []
-#
-#for i in vrtp:
-#    vradial.append(i[0])
-#    vtheta.append(i[1])
-#    vphi.append(i[2])
-#    vtotal.append((i[0]**2+i[1]**2+i[2]**2)**0.5)
-#    
-#plt.figure(6)
-#radial_v, = plt.plot(t, vradial, color='red')
-#theta_v, = plt.plot(t, vtheta, color='blue')
-#phi_v, = plt.plot(t, vphi, color='green')
-#v_total, = plt.plot(t, vtotal, linestyle='--', color='black')
-#plt.legend([xpos, ypos, zpos, r], ['radial_v', 'theta_v', 'phi_v', 'total speed'])
-#plt.xlabel("Time (s)")
-#plt.ylabel("Velocity (ms-1)")
+soln = spi.odeint(deriv,xinit,t)    # Solve ODE
+
+x, y, z = soln[:,0], soln[:,1], soln[:,2]
+vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
+
+plt.figure(1)
+plt.plot(x,y)
+#plt.xlim([-4e7, 0])
+#plt.ylim([0,1])
+plt.ticklabel_format(useOffset=False)
+plt.xlabel("position, x")
+plt.ylabel("position, y")
+
+plt.figure(2)
+plt.plot(x,z)
+plt.xlabel("position, x")
+plt.ylabel("position, z")
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
+ax.plot(x,y,z)
+plt.show()
+
+posr = np.vstack((x,y,z)).T
+
+
+""" Energy Calculations """
+
+v_xyz = np.vstack((vx,vy,vz)).T
+v_ = []
+for i in v_xyz:
+    v_.append(np.linalg.norm(i))
+v_ = np.array(v_)
+KE = 0.5*mp*v_**2
+
+mod_r = []    
+for i in posr:
+    mod_r.append(np.linalg.norm(i))
+    
+posr = np.vstack((x,y,z)).T
+PE = []
+for i in posr:
+    PE.append(q*np.dot((x0-i), e_field(i)))
+
+TE = []
+for i,j in zip(KE, PE):
+    TE.append(i+j)
+
+plt.figure(4)
+TE, = plt.plot(t, TE, linestyle='--', color='black')
+PE, = plt.plot(t, PE, color='red')
+KE, = plt.plot(t, KE, color='blue')
+plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
+plt.xlabel("Time (s)")
+plt.ylabel("Energy")
+
+""" Trajectories """
+
+plt.figure(5)
+xpos, = plt.plot(t, x, color='red')
+ypos, = plt.plot(t, y, color='blue')
+zpos, = plt.plot(t, z, color='green')
+r, = plt.plot(t, mod_r, linestyle='--', color='black')
+plt.legend([xpos, ypos, zpos, r], ['xpos', 'ypos', 'zpos', 'r'])
+plt.xlabel("Time (s)")
+plt.ylabel("Position (m)")
+
+""" Velocities in spherical coordinates """
+
+vrtp = []
+for i in soln:
+    vrtp.append(rec_spherical(i))
+
+vradial = []
+vtheta = []
+vphi = []
+vtotal = []
+
+for i in vrtp:
+    vradial.append(i[0])
+    vtheta.append(i[1])
+    vphi.append(i[2])
+    vtotal.append((i[0]**2+i[1]**2+i[2]**2)**0.5)
+    
+plt.figure(6)
+radial_v, = plt.plot(t, vradial, color='red')
+theta_v, = plt.plot(t, vtheta, color='blue')
+phi_v, = plt.plot(t, vphi, color='green')
+v_total, = plt.plot(t, vtotal, linestyle='--', color='black')
+plt.legend([xpos, ypos, zpos, r], ['radial_v', 'theta_v', 'phi_v', 'total speed'])
+plt.xlabel("Time (s)")
+plt.ylabel("Velocity (ms-1)")
