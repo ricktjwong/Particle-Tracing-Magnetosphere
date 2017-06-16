@@ -8,6 +8,8 @@ Created on Fri Jun 16 10:11:39 2017
 import numpy as np
 
 ## where lower_r upper_r are range of coordinates ExpectV is expectation of final V and n is size
+
+
 def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, ExpectV , n):
     v_sq = ExpectV**2
     Pos_Vel = []
@@ -21,7 +23,7 @@ def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, Expect
     
     xyz_vel = (v_sq)*np.random.dirichlet(np.ones(3),size = n)
     for i in xyz_vel:
-        vx,vy,vz = np.sqrt(i[0]), np.sqrt(i[1]), np.sqrt(i[2])
+        vx,vy,vz = np.sqrt(i[0]), (random.choice([+1, -1]))*np.sqrt(i[1]), (random.choice([+1, -1]))*np.sqrt(i[2])
         v_.append( [vx, vy, vz] )
     print v_
     
@@ -29,4 +31,4 @@ def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, Expect
     
     return Pos_Vel
     
-rng1 = rng_posvel(-20, -10, -10, 10, -10, 10, 5, 3)        
+rng1 = rng_posvel(-20, -10, -10, 10, -10, 10, 5, 5)        
