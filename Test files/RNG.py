@@ -6,6 +6,7 @@ Created on Fri Jun 16 10:11:39 2017
 """
 
 import numpy as np
+import random
 
 ## where lower_r upper_r are range of coordinates ExpectV is expectation of final V and n is size
 
