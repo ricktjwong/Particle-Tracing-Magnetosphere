@@ -20,10 +20,10 @@ plt.rcParams['lines.linewidth'] = 0.8
 mu = 4*np.pi*1e-7
 q = 1.6 * 1e-19
 mp = 1.67 * 1e-27
-m = np.array([0.0, 0.0, 5e22]) 
+m = np.array([0.0, 0.0, -5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
-t = np.linspace(0,45,4500)
+t = np.linspace(0,180,4500)
 omega = np.array([0.0, 0.0, 7.2921150e-5])
 
 def b_field(m, r, r0):
@@ -39,7 +39,7 @@ def e_field(r):
     B_convec = np.array([0, 0, -5e-9])
     E_convec = -np.cross(v_convec, B_convec)
     B_corot = b_field(m, r, r0)
-    E_corot = np.cross(omega, np.cross(r, B_corot))
+    E_corot = -np.cross(np.cross(omega, r),  B_corot)
     total_E = E_corot + E_convec
     return total_E
 
@@ -172,7 +172,6 @@ def search2(pos_vel):
                 
     return (soln_set, nonsoln_set)
     
-xinit = [-5*RE, 0.0, 0.5*RE, 300e3, 0.0, 200.0e3]
 
 def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, ExpectV , n):
     v_sq = ExpectV**2
@@ -205,13 +204,15 @@ def saveToFile(valuesToWrite, sweep_param):
         text_file.write(str(i)+": %s \n\n" % str(j))
     text_file.close()
 
-random_posvel_array = rng_posvel(-10*RE, -2*RE, -3*RE , 3*RE , -3*RE , 3*RE, 400.0e3 , 10)
-soln_posvel , nonsoln_posvel = search2(random_posvel_array)
-print soln_posvel
-print nonsoln_posvel    
+#random_posvel_array = rng_posvel(-10*RE, -2*RE, -3*RE , 3*RE , -3*RE , 3*RE, 400.0e3 , 10)
+#soln_posvel , nonsoln_posvel = search2(random_posvel_array)
+#print soln_posvel
+#print nonsoln_posvel    
     
 #saveToFile([soln_pos, nonsoln_pos], 'posx')
 #saveToFile([soln_vel, nonsoln_vel], 'velx')
+
+xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 400e3, 100e3]
 
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
