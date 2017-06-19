@@ -23,7 +23,7 @@ mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, 5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
-t = np.linspace(0,14,2000)
+t = np.linspace(0,45,4500)
 omega = np.array([0.0, 0.0, 7.2921150e-5])
 
 def b_field(m, r, r0):
@@ -35,11 +35,11 @@ def b_field(m, r, r0):
     return B
 
 def e_field(r):
-    v_convec = np.array([400e2, 0, 0])
-    B_convec = np.array([0, 0, 5e-9])
+    v_convec = np.array([400e3, 0, 0])
+    B_convec = np.array([0, 0, -5e-9])
     E_convec = -np.cross(v_convec, B_convec)
     B_corot = b_field(m, r, r0)
-    E_corot = -np.cross(omega, np.cross(r, B_corot))
+    E_corot = np.cross(omega, np.cross(r, B_corot))
     total_E = E_corot + E_convec
     return total_E
 
@@ -88,7 +88,7 @@ def CheckEnter(trajectory):
     
 def CheckEnter2(trajectory):
     Enter = False
-    step = 200
+    step = 50
     sampled_traj = []
     true_list = []
     posr = []
@@ -100,6 +100,7 @@ def CheckEnter2(trajectory):
         posr.append(r_)
     for i in posr:
         r_mod = np.linalg.norm(i)
+        print r_mod
         if r_mod <= RE:
             true_list.append(True)
             print true_list
@@ -146,8 +147,53 @@ def search(pos_vel, step, count, sweep_param):
         n += 1
     
     return (soln_set, nonsoln_set)
+
+def search2(pos_vel):
+    soln_set = []
+    nonsoln_set = []
+    delta = step  # increment of initial x to sweep
+    n = 1           # counter
+    for i in pos_vel:
+        traj = spi.odeint(deriv,i,t)
+        if CheckEnter(traj) == True:
+            soln_set.append(i)
+            print traj[-1]
+            print "Enter!"
+        elif CheckEnter(traj) == False:
+            mod_r=[]
+            x,y,z = traj[:,0], traj[:,1], traj[:,2]
+            posr = np.vstack((x,y,z)).T
+            for j in posr:
+                mod_r.append(np.linalg.norm(j))
+            print np.min(mod_r)
+            #print traj[-1]
+            print "Not Enter!"
+            nonsoln_set.append(i)
+                
+    return (soln_set, nonsoln_set)
     
-xinit = [-5*RE, 0.0, 0.5*RE, 100e3, 0.0, 0.0]
+xinit = [-5*RE, 0.0, 0.5*RE, 300e3, 0.0, 200.0e3]
+
+def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, ExpectV , n):
+    v_sq = ExpectV**2
+    Pos_Vel = []
+    v_ = []
+    
+    x_pos = np.random.randint(lower_x, upper_x,size = (n,1))
+    y_pos = np.random.randint(lower_y,upper_y,size=(n,1))
+    z_pos = np.random.randint(lower_z,upper_z,size=(n,1))
+    xyz_pos = np.hstack((x_pos,y_pos,z_pos))
+    print xyz_pos
+    
+    xyz_vel = (v_sq)*np.random.dirichlet(np.ones(3),size = n)
+    for i in xyz_vel:
+        vx,vy,vz = np.sqrt(i[0]), (random.choice([+1, -1]))*np.sqrt(i[1]), (random.choice([+1, -1]))*np.sqrt(i[2])
+        v_.append( [vx, vy, vz] )
+    print v_
+    
+    Pos_Vel = np.hstack((xyz_pos, v_))
+    
+    return Pos_Vel
 
 #soln_pos, nonsoln_pos = search(xinit, RE, 10, 'pos')
 #soln_vel, nonsoln_vel = search(xinit, 100e3, 10, 'velx')
@@ -159,6 +205,11 @@ def saveToFile(valuesToWrite, sweep_param):
         text_file.write(str(i)+": %s \n\n" % str(j))
     text_file.close()
 
+random_posvel_array = rng_posvel(-10*RE, -2*RE, -3*RE , 3*RE , -3*RE , 3*RE, 400.0e3 , 10)
+soln_posvel , nonsoln_posvel = search2(random_posvel_array)
+print soln_posvel
+print nonsoln_posvel    
+    
 #saveToFile([soln_pos, nonsoln_pos], 'posx')
 #saveToFile([soln_vel, nonsoln_vel], 'velx')
 
