@@ -151,8 +151,6 @@ def search(pos_vel, step, count, sweep_param):
 def search2(pos_vel):
     soln_set = []
     nonsoln_set = []
-    delta = step  # increment of initial x to sweep
-    n = 1           # counter
     for i in pos_vel:
         traj = spi.odeint(deriv,i,t)
         if CheckEnter(traj) == True:

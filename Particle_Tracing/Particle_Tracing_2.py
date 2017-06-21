@@ -6,6 +6,7 @@ from VTK_to_Numpy import vtk_subs
 from scipy.interpolate import RegularGridInterpolator
 from scipy.integrate import odeint
 from scipy.constants import electron_mass, proton_mass, elementary_charge
+import random
 me = electron_mass
 mp = proton_mass
 qe = elementary_charge
@@ -134,24 +135,24 @@ el = np.logical_and(el,el_r)
 t = t[el]
 eta = eta[el]
 
-# Plot
-fig, ax = plt.subplots(1,2,sharex=True,figsize=(11,5))
-r = np.sqrt(np.sum(eta[:,:3]**2,axis=1))
-v = np.sqrt(np.sum(eta[:,3:]**2,axis=1))
-ax[0].plot(t,eta[:,:3]/RP,t,r/RP)
-ax[1].plot(t,eta[:,3:]/1e3,t,v/1e3)
-for axi in ax:
-    axi.legend(['x','y','z','mag'])
-plt.show()
-
-from mpl_toolkits.mplot3d import Axes3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(eta[:,0]/RP,eta[:,1]/RP,eta[:,2]/RP)
-ax.set(xlim=[x.min()/RP,x.max()/RP],ylim=[y.min()/RP,y.max()/RP],zlim=[z.min()/RP,z.max()/RP],
-      xlabel='x',ylabel='y',zlabel='z',
-      aspect='equal')
-plt.show()
+## Plot
+#fig, ax = plt.subplots(1,2,sharex=True,figsize=(11,5))
+#r = np.sqrt(np.sum(eta[:,:3]**2,axis=1))
+#v = np.sqrt(np.sum(eta[:,3:]**2,axis=1))
+#ax[0].plot(t,eta[:,:3]/RP,t,r/RP)
+#ax[1].plot(t,eta[:,3:]/1e3,t,v/1e3)
+#for axi in ax:
+#    axi.legend(['x','y','z','mag'])
+#plt.show()
+#
+#from mpl_toolkits.mplot3d import Axes3D
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='3d')
+#ax.plot(eta[:,0]/RP,eta[:,1]/RP,eta[:,2]/RP)
+#ax.set(xlim=[x.min()/RP,x.max()/RP],ylim=[y.min()/RP,y.max()/RP],zlim=[z.min()/RP,z.max()/RP],
+#      xlabel='x',ylabel='y',zlabel='z',
+#      aspect='equal')
+#plt.show()
 
 def CheckEnter(trajectory):
     Enter = False
@@ -171,7 +172,7 @@ def search(pos_vel, step, count, sweep_param):
     delta = step  # increment of initial x to sweep
     n = 1           # counter
     while n <= count:
-        traj = odeint(lorentz,eta0,t,args=(m,q,x,y,z,E,B,d))
+        traj = odeint(lorentz,pos_vel,t,args=(m,q,x,y,z,E,B,d))
         if CheckEnter(traj) == True:
             soln_set.append(pos_vel)
             print traj[-1]
@@ -195,12 +196,59 @@ def search(pos_vel, step, count, sweep_param):
             pos_vel = pos_vel + np.array([0.0,0.0,delta,0.0,0.0,0.0])
         elif sweep_param == "velx":
             pos_vel = pos_vel + np.array([0.0,0.0,0.0,delta,0.0,0.0])
+        elif sweep_param == "vely":
+            pos_vel = pos_vel + np.array([0.0,0.0,0.0,0.0,delta,0.0])
         n += 1
     
     return (soln_set, nonsoln_set)
 
+def search2(pos_vel):
+    soln_set = []
+    nonsoln_set = []
+    for i in pos_vel:
+        traj = odeint(lorentz,i,t,args=(m,q,x,y,z,E,B,d))
+        if CheckEnter(traj) == True:
+            soln_set.append(i)
+            print traj[-1]
+            print "Enter!"
+        elif CheckEnter(traj) == False:
+            mod_r=[]
+            posx,posy,posz = traj[:,0], traj[:,1], traj[:,2]
+            posr = np.vstack((posx,posy,posz)).T
+            for j in posr:
+                mod_r.append(np.linalg.norm(j))
+            print np.min(mod_r)
+            #print traj[-1]
+            print "Not Enter!"
+            nonsoln_set.append(i)
+                
+    return (soln_set, nonsoln_set)
+
+def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, ExpectV , n):
+    v_sq = ExpectV**2
+    Pos_Vel = []
+    v_ = []
+    
+    x_pos = np.random.randint(lower_x, upper_x,size = (n,1))*RP
+    y_pos = np.random.randint(lower_y,upper_y,size=(n,1))*RP
+    z_pos = np.random.randint(lower_z,upper_z,size=(n,1))*RP
+    xyz_pos = np.hstack((x_pos,y_pos,z_pos))
+    print xyz_pos
+    
+    xyz_vel = (v_sq)*np.random.dirichlet(np.ones(3),size = n)
+    for i in xyz_vel:
+        vx,vy,vz = np.sqrt(i[0]), (random.choice([+1, -1]))*np.sqrt(i[1]), (random.choice([+1, -1]))*np.sqrt(i[2])
+        v_.append( [vx, vy, vz] )
+    print v_
+    
+    Pos_Vel = np.hstack((xyz_pos, v_))
+    
+    return Pos_Vel
+
+soln, nonsoln = search2(rng_posvel(-20,-2,0,1,-15,-1,400.0e3,10))
+
 #soln_pos, nonsoln_pos = search(xinit, RE, 10, 'pos')
-soln_vel, nonsoln_vel = search(eta0, RP, 10, 'posx')
+#soln_vel, nonsoln_vel = search(eta0, RP, 10, 'posx')
 
 def saveToFile(valuesToWrite, sweep_param):
     text_file = open('Data/'+sweep_param+".txt", "w")
@@ -210,5 +258,6 @@ def saveToFile(valuesToWrite, sweep_param):
     text_file.close()
 
 #saveToFile([soln_pos, nonsoln_pos], 'posx')
-saveToFile([soln_vel, nonsoln_vel], 'velx')
+#saveToFile([soln_vel, nonsoln_vel], 'velx')
+saveToFile([soln, nonsoln], 'random')
 
