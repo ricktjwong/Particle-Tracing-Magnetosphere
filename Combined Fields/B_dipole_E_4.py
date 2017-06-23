@@ -23,8 +23,12 @@ mp = 1.67 * 1e-27
 m = np.array([0.0, 0.0, -5e22]) 
 r0 = np.array([0.0, 0.0, 0.0])
 RE = 6.4e6
-t = np.linspace(0,180,4500)
+#t = np.linspace(0,240,3000) #corotation enter
+t = np.linspace(0,2200,10000) #corotation no enter
+
 omega = np.array([0.0, 0.0, 7.2921150e-5])
+
+""" Calculate B field at each point due to a specified magnetic dipole """
 
 def b_field(m, r, r0):
     r_diff = r - r0
@@ -34,6 +38,8 @@ def b_field(m, r, r0):
     B = mu*(term1 - term2)/(4*np.pi)
     return B
 
+""" Calculate E field at each point due to the convection and corotation fields """
+
 def e_field(r):
     v_convec = np.array([400e3, 0, 0])
     B_convec = np.array([0, 0, -5e-9])
@@ -42,6 +48,8 @@ def e_field(r):
     E_corot = -np.cross(np.cross(omega, r),  B_corot)
     total_E = E_corot + E_convec
     return total_E
+
+""" Integrate to solve the equation of motion """
 
 def deriv(x,t):
     xx, xy, xz = x[0], x[1], x[2]   # Initial conditions position
@@ -56,6 +64,8 @@ def deriv(x,t):
         a = np.array([0,0,0])
         v = np.array([0,0,0])
     return (v[0], v[1], v[2], a[0], a[1], a[2])
+
+""" Converts velocity from cartesian to spherical coordinates """
     
 def rec_spherical(pos_vel):
     xx, xy, xz = pos_vel[0], pos_vel[1], pos_vel[2]
@@ -73,6 +83,8 @@ def rec_spherical(pos_vel):
     vtheta = np.dot(v_, theta_hat)
     vphi = np.dot(v_, phi_hat)     
     return (vr, vtheta, vphi)
+
+""" Returns True/False for whether particle enters the Earth's radius, and thus atmosphere """
     
 def CheckEnter(trajectory):
     Enter = False
@@ -169,7 +181,8 @@ def search2(pos_vel):
             nonsoln_set.append(i)
                 
     return (soln_set, nonsoln_set)
-    
+
+""" Generates random initial conditions to extract conditions where particle enters Earth """
 
 def rng_posvel(lower_x , upper_x , lower_y , upper_y , lower_z , upper_z, ExpectV , n):
     v_sq = ExpectV**2
@@ -210,7 +223,8 @@ def saveToFile(valuesToWrite, sweep_param):
 #saveToFile([soln_pos, nonsoln_pos], 'posx')
 #saveToFile([soln_vel, nonsoln_vel], 'velx')
 
-xinit = [-5*RE, 0.0, 0.5*RE, 400e3, 400e3, 100e3]
+#xinit = [-7*RE, 1.5*RE, 10*RE, 400e3, 0.0, -100e3] #corotation enter
+xinit = [-10*RE, 1.5*RE, 21*RE, 400e3, 0.0, -100e3] #corotation noenter
 
 x0 = np.array([xinit[0], xinit[1], xinit[2]])
 v0 = np.array([xinit[3], xinit[4], xinit[5]])
@@ -227,6 +241,8 @@ soln = spi.odeint(deriv,xinit,t)    # Solve ODE
 x, y, z = soln[:,0], soln[:,1], soln[:,2]
 vx, vy, vz = soln[:,3], soln[:,4], soln[:,5]
 
+""" Position plots """
+
 plt.figure(1)
 plt.plot(x,y)
 #plt.xlim([-4e7, 0])
@@ -234,6 +250,7 @@ plt.plot(x,y)
 plt.ticklabel_format(useOffset=False)
 plt.xlabel("position, x")
 plt.ylabel("position, y")
+plt.savefig('BE_corot_posxy.pdf', format='pdf', dpi=1000)
 
 plt.figure(2)
 plt.plot(x,z)
@@ -242,10 +259,11 @@ plt.ylabel("position, z")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.set_xlabel('X axis')
-ax.set_ylabel('Y axis')
-ax.set_zlabel('Z axis')
-ax.plot(x,y,z)
+ax.set_xlabel('x displacement (m)')
+ax.set_ylabel('y displacement')
+ax.set_zlabel('z displacement (m)')
+ax.plot(x,y,z, color='blue')
+plt.savefig('BE_corot_pos3D.pdf', format='pdf', dpi=1000)
 plt.show()
 
 posr = np.vstack((x,y,z)).T
@@ -277,9 +295,11 @@ plt.figure(4)
 TE, = plt.plot(t, TE, linestyle='--', color='black')
 PE, = plt.plot(t, PE, color='red')
 KE, = plt.plot(t, KE, color='blue')
-plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
+#plt.legend([TE, PE, KE], ['TE', 'PE', 'KE'])
 plt.xlabel("Time (s)")
 plt.ylabel("Energy")
+plt.savefig('BE_corot_energy.pdf', format='pdf', dpi=1000)
+
 
 """ Trajectories """
 
@@ -288,9 +308,13 @@ xpos, = plt.plot(t, x, color='red')
 ypos, = plt.plot(t, y, color='blue')
 zpos, = plt.plot(t, z, color='green')
 r, = plt.plot(t, mod_r, linestyle='--', color='black')
-plt.legend([xpos, ypos, zpos, r], ['xpos', 'ypos', 'zpos', 'r'])
+plt.xlim([0, 55])
+#plt.ylim([0,1])
+#plt.legend([xpos, ypos, zpos, r], ['xpos', 'ypos', 'zpos', 'r'])
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
+plt.savefig('BE_corot_posxyz.pdf', format='pdf', dpi=1000)
+
 
 """ Velocities in spherical coordinates """
 
@@ -314,6 +338,7 @@ radial_v, = plt.plot(t, vradial, color='red')
 theta_v, = plt.plot(t, vtheta, color='blue')
 phi_v, = plt.plot(t, vphi, color='green')
 v_total, = plt.plot(t, vtotal, linestyle='--', color='black')
-plt.legend([xpos, ypos, zpos, r], ['radial_v', 'theta_v', 'phi_v', 'total speed'])
+#plt.legend([xpos, ypos, zpos, r], ['radial_v', 'theta_v', 'phi_v', 'total speed'])
 plt.xlabel("Time (s)")
 plt.ylabel("Velocity (ms-1)")
+plt.savefig('BE_corot_vels.pdf', format='pdf', dpi=1000, bbox_inches='tight')
